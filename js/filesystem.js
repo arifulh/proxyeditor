@@ -23,6 +23,7 @@ var FileLoader = (function() {
         destroy: function(callback) {
             var f = this;
             f.load(function(entry) {
+                if (!entry) return;
                 entry.remove(
                     function () { if (callback) callback(entry)}, 
                     function(e) { console.log(e)});
