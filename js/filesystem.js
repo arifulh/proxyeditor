@@ -14,8 +14,8 @@ var FileLoader = (function() {
         load: function(callback) {
             var f = this; 
             f.filesys.root[f.method](f.name, { create: f.create || false }, 
-                function(entry) { callback(entry); }, 
-                function(e) { if (e.code === 1) callback();
+                function(entry) { if (callback) callback(entry); }, 
+                function(e) { if (e.code === 1) if (callback) callback();
             });
             return f;
         },
@@ -46,6 +46,16 @@ var DirLoader = (function() {
 
     DirLoader.prototype = new FileLoader();
 
+    DirLoader.prototype.destroyRecursively = function(callback) {
+        var f = this;
+        f.load(function(entry) {
+            if (!entry) return;
+            entry.removeRecursively(
+                function () { if (callback) callback(entry)}, 
+                function(e) { console.log(e)});
+        });
+    }
+
     return DirLoader;
 
 })();
@@ -59,7 +69,6 @@ var Filesystem = (function () {
 
         ready: function (type, size, callback) {
             var f = this, readyCB = callback;
-            f.onError.bind(f);
             window.webkitRequestFileSystem(
             type, size, function (fs) {
                 f.filesys = fs; readyCB.call(f);
@@ -117,9 +126,36 @@ var Filesystem = (function () {
         removeDir: function (dirname, callback) {
             var f = this, dir;
             dir = new DirLoader(dirname, f.filesys);
-            dir.destroy(callback);
+            dir.destroyRecursively(callback);
             return f;
-        }
+        },
+
+        getSubDir: function(dirpath, callback) {
+            var f = this, temp = [], path, len;
+            path = dirpath.split('/'); 
+            len = path.length;
+            for (var i=0; i<len; i++) {
+                temp.push(path.shift() + '/');
+                f.getDir(temp.join(''), 
+                    (i==len-1 ? callback : null));  
+            }
+            return f;
+        },
+
+        removeSubDir: function(dirpath, callback) {
+            var f = this, path, len;
+            path = dirpath.split('/'); 
+            len = path.length;
+            path.push('');
+            for (var i=len; i>0; i--) {
+                path.pop();
+                f.removeDir(path.join('/'), 
+                    (i==len-1 ? callback : null));  
+            }
+            return f;
+        },
+
+
     }
 
     return Filesystem;
@@ -132,10 +168,9 @@ filesystem.ready(window.TEMPORARY, (1024 * 1024), function () {
 
     var fs = this;
 
-    fs.removeDir('logas', function(dirEntry) {
+    fs.removeSubDir('d/e/f', function(dirEntry) {
         console.log(dirEntry);
     });
-
 
 });
 
