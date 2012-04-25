@@ -67,7 +67,7 @@ var Filesystem = (function () {
 
     Filesystem.prototype = {
 
-        ready: function (type, size, callback) {
+        ready: function(type, size, callback) {
             var f = this, readyCB = callback;
             window.webkitRequestFileSystem(
             type, size, function (fs) {
@@ -75,14 +75,14 @@ var Filesystem = (function () {
             }, f.onError);
         },
 
-        getFile: function (filename, callback) {
+        getFile: function(filename, callback) {
             var f = this, file;
             file = new FileLoader(filename, f.filesys, true);
             file.load(callback);
             return f;
         },
 
-        removeFile: function (filename, callback) {
+        removeFile: function(filename, callback) {
             var f = this, file;
             file = new FileLoader(filename, f.filesys);
             file.destroy(callback);
@@ -100,7 +100,7 @@ var Filesystem = (function () {
             return f;
         },
 
-        writeFile: function (fileEntry, content, callback) {
+        writeFile: function(fileEntry, content, callback) {
             var f = this, file;
             fileEntry.createWriter(function(fileWriter) {
                 fileWriter.onwriteend = function(e) {
