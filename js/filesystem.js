@@ -162,17 +162,17 @@ var Filesystem = (function () {
 
 })();
 
-var filesystem = new Filesystem;
+// var filesystem = new Filesystem;
 
-filesystem.ready(window.TEMPORARY, (1024 * 1024), function () {
+// filesystem.ready(window.TEMPORARY, (1024 * 1024), function () {
 
-    var fs = this;
+//     var fs = this;
 
-    fs.removeSubDir('d/e/f', function(dirEntry) {
-        console.log(dirEntry);
-    });
+//     fs.removeSubDir('d/e/f', function(dirEntry) {
+//         console.log(dirEntry);
+//     });
 
-});
+// });
 
 
 
